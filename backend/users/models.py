@@ -147,7 +147,6 @@ class Profession(models.Model):
         verbose_name = 'Профессия'
         verbose_name_plural = 'Профессии'
 
-
     def __str__(self):
         return self.title
 

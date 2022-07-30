@@ -48,6 +48,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     search_fields = ('worker', 'customer', 'link', )
 
 
+admin.site.register(Schedule, ScheduleAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
