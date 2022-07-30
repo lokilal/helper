@@ -1,5 +1,29 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+
+
+class Schedule(models.Model):
+    worker = models.ForeignKey(
+        'Worker', on_delete=models.DO_NOTHING,
+        related_name='schedules',
+        verbose_name='Работник'
+    )
+    customer = models.ForeignKey(
+        'Customer', on_delete=models.DO_NOTHING,
+        related_name='schedules',
+        verbose_name='Пользователь'
+    )
+    date = models.DateTimeField(
+        verbose_name='Время встречи', db_index=True
+    )
+    link = models.URLField(
+        verbose_name='Ссылка на комнату'
+    )
+
+    class Meta:
+        verbose_name = 'Расписание'
+        verbose_name_plural = 'Расписания'
+        ordering = ['-date']
 
 
 class Question(models.Model):
@@ -16,32 +40,32 @@ class Question(models.Model):
     )
     profession = models.ForeignKey(
         'Profession', on_delete=models.CASCADE,
-        verbose_name='Профессия'
+        verbose_name='Профессия', related_name='questions'
     )
-
-    def __str__(self):
-        return f'{self.profession.title} - {self.title}'
 
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
 
+    def __str__(self):
+        return f'{self.profession.title} - {self.title}'
+
 
 class Choice(models.Model):
     question = models.ForeignKey(
         Question, on_delete=models.DO_NOTHING,
-        verbose_name='Вопрос'
+        verbose_name='Вопрос', related_name='choices'
     )
     title = models.CharField(
         max_length=128, verbose_name='Ответ'
     )
 
-    def __str__(self):
-        return f'{self.title}'
-
     class Meta:
         verbose_name = 'Ответ'
         verbose_name_plural = 'Ответы'
+
+    def __str__(self):
+        return f'{self.title}'
 
 
 class QuestionAnswer(models.Model):
@@ -64,9 +88,6 @@ class QuestionAnswer(models.Model):
         auto_now_add=True, verbose_name='Дата ответа'
     )
 
-    def __str__(self):
-        return f'{self.user} - {self.question}'
-
     class Meta:
         ordering = ['user']
         verbose_name = 'Ответ на вопрос'
@@ -78,15 +99,18 @@ class QuestionAnswer(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.user} - {self.question}'
+
 
 class Feedback(models.Model):
     customer = models.ForeignKey(
         'Customer', on_delete=models.CASCADE,
-        verbose_name='Пользователь'
+        verbose_name='Пользователь', related_name='feedbacks'
     )
     worker = models.ForeignKey(
         'Worker', on_delete=models.CASCADE,
-        verbose_name='Работник'
+        verbose_name='Работник', related_name='feedbacks'
     )
     comment = models.TextField(
         max_length=512, verbose_name='Комментарий'
@@ -110,18 +134,22 @@ class Feedback(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.customer} - {self.worker}'
+
 
 class Profession(models.Model):
     title = models.CharField(
         max_length=64, verbose_name='Название профессии'
     )
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = 'Профессия'
         verbose_name_plural = 'Профессии'
+
+
+    def __str__(self):
+        return self.title
 
 
 class Worker(models.Model):
@@ -143,7 +171,7 @@ class Worker(models.Model):
     )
     profession = models.ForeignKey(
         Profession, on_delete=models.CASCADE,
-        verbose_name='Профессия'
+        verbose_name='Профессия', related_name='workers'
     )
     experience = models.DecimalField(
         max_digits=3, decimal_places=1,
@@ -184,10 +212,10 @@ class Customer(models.Model):
         auto_now_add=True, verbose_name='Дата регистрации'
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name

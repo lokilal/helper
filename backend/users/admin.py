@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Question, QuestionAnswer, Profession, Worker, Customer, Choice, Feedback
+from .models import (Choice, Customer, Feedback, Profession, Question,
+                     QuestionAnswer, Worker, Schedule)
 
 
 class ChoiceInline(admin.StackedInline):
@@ -39,6 +40,12 @@ class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'telegram_id', 'free_period', )
     list_filter = ('free_period', 'created_at', )
     search_fields = ('telegram_id', )
+
+
+class ScheduleAdmin(admin.ModelAdmin):
+    list_display = ('worker', 'customer', 'date', 'link', )
+    list_filter = ('date', )
+    search_fields = ('worker', 'customer', 'link', )
 
 
 admin.site.register(Question, QuestionAdmin)
