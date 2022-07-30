@@ -202,7 +202,7 @@ class Customer(models.Model):
         max_length=64, verbose_name='Контактные данные'
     )
     telegram_id = models.IntegerField(
-        verbose_name='Telegram ID', default=0
+        verbose_name='Telegram ID', unique=True
     )
     free_period = models.BooleanField(
         default=False, verbose_name='Использован бесплатный период'

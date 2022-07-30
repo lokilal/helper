@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
-                     QuestionAnswer, Worker, Schedule)
+                     QuestionAnswer, Schedule, Worker)
 
 
 class ProfessionSerializer(serializers.ModelSerializer):
@@ -29,3 +29,8 @@ class WorkerCreateSerializer(serializers.ModelSerializer):
         exclude = ('created_at', )
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Customer
+        exclude = ('id', 'created_at', )

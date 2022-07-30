@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
-                     QuestionAnswer, Worker, Schedule)
+                     QuestionAnswer, Schedule, Worker)
 
 
 class ChoiceInline(admin.StackedInline):

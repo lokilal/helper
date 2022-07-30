@@ -1,9 +1,9 @@
-from django.shortcuts import render
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
-                     QuestionAnswer, Worker, Schedule)
-from .serializers import ProfessionSerializer, WorkerSerializer, WorkerCreateSerializer
+                     QuestionAnswer, Schedule, Worker)
+from .serializers import (CustomerSerializer, ProfessionSerializer,
+                          WorkerCreateSerializer, WorkerSerializer)
 
 
 class ProfessionViewSet(ReadOnlyModelViewSet):
@@ -19,3 +19,8 @@ class WorkerViewSet(ModelViewSet):
         if self.request.method in ('POST', 'PATCH', ):
             return WorkerCreateSerializer
         return WorkerSerializer
+
+
+class CustomerViewSet(ModelViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
