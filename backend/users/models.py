@@ -177,10 +177,6 @@ class Worker(models.Model):
         verbose_name='Опыт работы в годах',
         validators=[MinValueValidator(2)]
     )
-    rating = models.DecimalField(
-        max_digits=3, decimal_places=2,
-        verbose_name='Рейтинг', default=0
-    )
     balance = models.PositiveBigIntegerField(
         verbose_name='Остаток на балансе', default=0
     )
@@ -188,13 +184,21 @@ class Worker(models.Model):
         auto_now_add=True, verbose_name='Дата создания'
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Работник'
         verbose_name_plural = 'Работники'
         ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def get_rating(self):
+        return Feedback.objects.filter(
+            worker__telegram_id=self.telegram_id
+        ).aggregate(models.Avg('score'))['score__avg']
+
+    get_rating.fget.short_description = 'Рейтинг'
 
 
 class Customer(models.Model):
@@ -205,7 +209,7 @@ class Customer(models.Model):
         verbose_name='Telegram ID', unique=True
     )
     free_period = models.BooleanField(
-        default=False, verbose_name='Использован бесплатный период'
+        default=False, verbose_name='Использован бесплатный звонок'
     )
     created_at = models.DateField(
         auto_now_add=True, verbose_name='Дата регистрации'

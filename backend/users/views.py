@@ -3,7 +3,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from .models import (Choice, Customer, Feedback, Profession, Question,
                      QuestionAnswer, Schedule, Worker)
 from .serializers import (CustomerSerializer, ProfessionSerializer,
-                          WorkerCreateSerializer, WorkerSerializer)
+                          WorkerCreateSerializer, WorkerSerializer,
+                          FeedbackSerializer)
 
 
 class ProfessionViewSet(ReadOnlyModelViewSet):
@@ -24,3 +25,8 @@ class WorkerViewSet(ModelViewSet):
 class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+class FeedbackViewSet(ModelViewSet):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer

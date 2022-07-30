@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator, ValidationError
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
                      QuestionAnswer, Schedule, Worker)
@@ -34,3 +35,27 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         exclude = ('id', 'created_at', )
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    customer = serializers.SlugRelatedField(
+        slug_field='telegram_id', queryset=Customer.objects.all()
+    )
+    worker = serializers.SlugRelatedField(
+        slug_field='telegram_id', queryset=Worker.objects.all()
+    )
+
+    class Meta:
+        model = Feedback
+        exclude = ('id', )
+        validators = (
+            UniqueTogetherValidator(
+                queryset=Feedback.objects.all(), fields=('customer', 'worker'),
+                message='Вы уже оставили отзыв'
+            ),
+        )
+
+    def validate(self, attrs):
+        if attrs['customer'] == attrs['worker']:
+            raise ValidationError('Нельзя поставить отзыв самому себе')
+        return attrs

@@ -31,7 +31,7 @@ class FeedbackAdmin(admin.ModelAdmin):
 
 
 class WorkerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'gender', 'profession', 'telegram_id', 'rating', 'balance', )
+    list_display = ('name', 'gender', 'profession', 'telegram_id', 'get_rating', 'balance', )
     list_filter = ('gender', 'profession')
     search_fields = ('telegram_id', )
 
