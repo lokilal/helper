@@ -61,7 +61,7 @@ class QuestionAnswer(models.Model):
         blank=True, null=True
     )
     created_at = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True, verbose_name='Дата ответа'
     )
 
     def __str__(self):
@@ -96,7 +96,7 @@ class Feedback(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     created_at = models.DateTimeField(
-        'Дата добавления', auto_now_add=True, db_index=True
+        'Дата публикации', auto_now_add=True, db_index=True
     )
 
     class Meta:
@@ -133,6 +133,9 @@ class Worker(models.Model):
     ]
     name = models.CharField(
         max_length=64, verbose_name='Имя рабочего'
+    )
+    telegram_id = models.IntegerField(
+        default=0, verbose_name='Telegram ID'
     )
     gender = models.CharField(
         max_length=1, choices=GENDERS, default=MALE,
