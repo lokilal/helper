@@ -37,7 +37,7 @@ class Choice(models.Model):
     )
 
     def __str__(self):
-        return f'{self.question} - {self.title}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Ответ'
@@ -135,7 +135,8 @@ class Worker(models.Model):
         max_length=64, verbose_name='Имя рабочего'
     )
     gender = models.CharField(
-        max_length=1, choices=GENDERS, default=MALE
+        max_length=1, choices=GENDERS, default=MALE,
+        verbose_name='Пол'
     )
     profession = models.ForeignKey(
         Profession, on_delete=models.CASCADE,
@@ -170,12 +171,11 @@ class Customer(models.Model):
     name = models.CharField(
         max_length=64, verbose_name='Контактные данные'
     )
+    telegram_id = models.IntegerField(
+        verbose_name='Telegram ID', default=0
+    )
     free_period = models.BooleanField(
         default=False, verbose_name='Использован бесплатный период'
-    )
-    QuestionnaireAnswer = models.ManyToManyField(
-        QuestionAnswer,
-        verbose_name='Ответы на анкеты'
     )
     created_at = models.DateField(
         auto_now_add=True, verbose_name='Дата регистрации'

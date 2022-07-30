@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Question, QuestionAnswer, Profession, Worker, Customer, Choice
+from .models import Question, QuestionAnswer, Profession, Worker, Customer, Choice, Feedback
 
 
 class ChoiceInline(admin.StackedInline):
@@ -16,6 +16,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(Feedback)
 admin.site.register(QuestionAnswer)
 admin.site.register(Profession)
 admin.site.register(Worker)
