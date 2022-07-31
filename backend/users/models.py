@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from pytils.translit import slugify
 
 
 class Schedule(models.Model):
@@ -142,6 +143,10 @@ class Profession(models.Model):
     title = models.CharField(
         max_length=64, verbose_name='Название профессии'
     )
+    slug = models.SlugField(
+        blank=True, null=True,
+        unique=True
+    )
 
     class Meta:
         verbose_name = 'Профессия'
@@ -149,6 +154,10 @@ class Profession(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Profession, self).save(*args, **kwargs)
 
 
 class Worker(models.Model):
@@ -194,10 +203,8 @@ class Worker(models.Model):
 
     @property
     def get_rating(self):
-        return Feedback.objects.filter(
-            worker__telegram_id=self.telegram_id
-        ).aggregate(models.Avg('score'))['score__avg']
-
+        worker = Worker.objects.get(telegram_id=self.telegram_id)
+        return worker.feedbacks.all().aggregate(models.Avg('score'))['score__avg']
     get_rating.fget.short_description = 'Рейтинг'
 
 

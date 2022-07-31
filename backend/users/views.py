@@ -1,10 +1,13 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
                      QuestionAnswer, Schedule, Worker)
 from .serializers import (CustomerSerializer, ProfessionSerializer,
                           WorkerCreateSerializer, WorkerSerializer,
-                          FeedbackSerializer)
+                          FeedbackSerializer, QuestionSerializer)
+from .filters import QuestionFilter
 
 
 class ProfessionViewSet(ReadOnlyModelViewSet):
@@ -30,3 +33,10 @@ class CustomerViewSet(ModelViewSet):
 class FeedbackViewSet(ModelViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
+
+
+class QuestionViewSet(ReadOnlyModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filterset_class = QuestionFilter

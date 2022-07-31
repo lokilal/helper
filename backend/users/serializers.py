@@ -59,3 +59,22 @@ class FeedbackSerializer(serializers.ModelSerializer):
         if attrs['customer'] == attrs['worker']:
             raise ValidationError('Нельзя поставить отзыв самому себе')
         return attrs
+
+
+class ChoiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Choice
+        exclude = ('id', 'question', )
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    choices = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Question
+        exclude = ('id', 'profession', )
+
+    def get_choices(self, obj):
+        choices = obj.choices.all()
+        return ChoiceSerializer(choices, many=True).data
