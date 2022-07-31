@@ -1,7 +1,12 @@
 from django.contrib import admin
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
-                     QuestionAnswer, Schedule, Worker)
+                     QuestionAnswer, Schedule, Worker, QuestionChoiceAnswer)
+
+
+class QuestionChoiceAnswerInline(admin.StackedInline):
+    model = QuestionChoiceAnswer
+    extra = 0
 
 
 class ChoiceInline(admin.StackedInline):
@@ -19,9 +24,10 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 class QuestionAnswerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'question', 'created_at', )
-    list_filter = ('question', 'created_at')
-    search_fields = ('user', )
+    list_display = ('customer', 'question', 'created_at', )
+    list_filter = ('question__profession', 'created_at')
+    search_fields = ('customer', )
+    inlines = [QuestionChoiceAnswerInline]
 
 
 class FeedbackAdmin(admin.ModelAdmin):

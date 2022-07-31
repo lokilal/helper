@@ -69,17 +69,39 @@ class Choice(models.Model):
         return f'{self.title}'
 
 
+class QuestionChoiceAnswer(models.Model):
+    question_answer = models.ForeignKey(
+        'QuestionAnswer', on_delete=models.CASCADE,
+        verbose_name='Ответ пользователя'
+    )
+    choice = models.ForeignKey(
+        Choice, on_delete=models.CASCADE,
+        verbose_name='Ответ пользователя'
+    )
+
+    class Meta:
+        verbose_name = 'Ответ пользователя'
+        verbose_name_plural = 'Ответы пользователя'
+        constraints = [
+            models.UniqueConstraint(fields=['question_answer', 'choice'],
+                                    name='unique_question_answer_choice')
+        ]
+
+    def __str__(self):
+        return str(self.question_answer.customer)
+
+
 class QuestionAnswer(models.Model):
-    user = models.IntegerField(
-        default=0, verbose_name='Telegram ID',
-        db_index=True
+    customer = models.ForeignKey(
+        'Customer', on_delete=models.CASCADE,
+        verbose_name='Пользователь', related_name='answers'
     )
     question = models.ForeignKey(
         Question, on_delete=models.DO_NOTHING,
-        verbose_name='Вопрос'
+        verbose_name='Вопрос',
     )
-    choice = models.ForeignKey(
-        Choice, on_delete=models.DO_NOTHING,
+    choice = models.ManyToManyField(
+        Choice, through='QuestionChoiceAnswer',
         verbose_name='Ответ', blank=True, null=True
     )
     answer_text = models.TextField(
@@ -90,18 +112,12 @@ class QuestionAnswer(models.Model):
     )
 
     class Meta:
-        ordering = ['user']
+        ordering = ['customer__telegram_id']
         verbose_name = 'Ответ на вопрос'
-        verbose_name_plural = 'Ответы на вопрос'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'choice'],
-                name='unique_user_choice'
-            )
-        ]
+        verbose_name_plural = 'Ответы на вопросы'
 
     def __str__(self):
-        return f'{self.user} - {self.question}'
+        return f'{self.customer} - {self.question}'
 
 
 class Feedback(models.Model):

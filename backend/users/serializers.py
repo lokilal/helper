@@ -1,14 +1,15 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, ValidationError
+from django.shortcuts import get_object_or_404
 
 from .models import (Choice, Customer, Feedback, Profession, Question,
-                     QuestionAnswer, Schedule, Worker)
+                     QuestionAnswer, Schedule, Worker, QuestionChoiceAnswer)
 
 
 class ProfessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profession
-        exclude = ('id', )
+        exclude = ('id',)
 
 
 class WorkerSerializer(serializers.ModelSerializer):
@@ -17,7 +18,7 @@ class WorkerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Worker
-        exclude = ('id', 'balance', 'created_at', )
+        exclude = ('id', 'balance', 'created_at',)
 
 
 class WorkerCreateSerializer(serializers.ModelSerializer):
@@ -27,14 +28,13 @@ class WorkerCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Worker
-        exclude = ('created_at', )
+        exclude = ('created_at',)
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Customer
-        exclude = ('id', 'created_at', )
+        exclude = ('id', 'created_at',)
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
@@ -47,7 +47,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feedback
-        exclude = ('id', )
+        exclude = ('id',)
         validators = (
             UniqueTogetherValidator(
                 queryset=Feedback.objects.all(), fields=('customer', 'worker'),
@@ -62,10 +62,9 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Choice
-        exclude = ('id', 'question', )
+        exclude = ('id', 'question')
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -73,8 +72,42 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        exclude = ('id', 'profession', )
+        exclude = ('id', 'profession',)
 
     def get_choices(self, obj):
         choices = obj.choices.all()
         return ChoiceSerializer(choices, many=True).data
+
+
+class QuestionAnswerSerializer(serializers.ModelSerializer):
+    customer = serializers.SlugRelatedField(
+        slug_field='telegram_id', queryset=Customer.objects.all()
+    )
+    question = serializers.SlugRelatedField(
+        slug_field='title', queryset=Question.objects.all()
+    )
+
+    class Meta:
+        model = QuestionAnswer
+        exclude = ('id',)
+
+    def validate(self, attrs):
+        choice = self.initial_data.get('choice')
+
+        answer_text = attrs.get('answer_text')
+        if not choice and not answer_text:
+            raise ValidationError(
+                'Не представлено ответа'
+            )
+        return attrs
+
+    def create(self, validated_data):
+        question_answer = QuestionAnswer.objects.create(**validated_data)
+        if 'choice' in self.initial_data:
+            choices = self.initial_data.pop('choice')
+            for choice in choices:
+                obj = get_object_or_404(Choice, title=choice['title'])
+                QuestionChoiceAnswer.objects.create(
+                    question_answer=question_answer, choice=obj
+                )
+        return question_answer

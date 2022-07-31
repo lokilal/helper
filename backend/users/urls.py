@@ -1,7 +1,8 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import ProfessionViewSet, WorkerViewSet, CustomerViewSet, FeedbackViewSet, QuestionViewSet
+from .views import (CustomerViewSet, FeedbackViewSet, ProfessionViewSet,
+                    QuestionAnswerViewSet, QuestionViewSet, WorkerViewSet)
 
 router_v1 = DefaultRouter()
 
@@ -24,6 +25,10 @@ router_v1.register(
 router_v1.register(
     'questions', QuestionViewSet,
     basename='questions'
+)
+router_v1.register(
+    'answers/(?P<telegram_id>[^/.]+)', QuestionAnswerViewSet,
+    basename='answers'
 )
 
 urlpatterns = [
