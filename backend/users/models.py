@@ -202,6 +202,9 @@ class Worker(models.Model):
         verbose_name='Опыт работы в годах',
         validators=[MinValueValidator(2)]
     )
+    about = models.TextField(
+        verbose_name='Краткое описание'
+    )
     balance = models.PositiveBigIntegerField(
         verbose_name='Остаток на балансе', default=0
     )
