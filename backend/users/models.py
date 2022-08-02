@@ -2,6 +2,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from pytils.translit import slugify
 
+from .validators import schedule_time_validator
+
 
 class Schedule(models.Model):
     worker = models.ForeignKey(
@@ -15,7 +17,8 @@ class Schedule(models.Model):
         verbose_name='Пользователь'
     )
     date = models.DateTimeField(
-        verbose_name='Время встречи', db_index=True
+        verbose_name='Время встречи', db_index=True,
+        validators=[schedule_time_validator]
     )
     link = models.URLField(
         verbose_name='Ссылка на комнату'

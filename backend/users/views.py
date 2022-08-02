@@ -6,7 +6,7 @@ from rest_framework.generics import UpdateAPIView
 
 
 from .filters import QuestionFilter
-from .models import (Choice, Customer, Feedback, Profession, Question,
+from .models import (Customer, Feedback, Profession, Question,
                      QuestionAnswer, Schedule, Worker)
 from .serializers import (CustomerSerializer, FeedbackSerializer,
                           ProfessionSerializer, QuestionAnswerSerializer,

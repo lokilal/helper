@@ -112,12 +112,12 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
         return question_answer
 
     def update(self, instance, validated_data):
-        if 'choice' and 'answer_text' in self.initial_data:
+        instance.choice.clear()
+        if all(['choice', 'answer_text']) in self.initial_data:
             raise ValidationError(
                 'answer_text и choice присутствуют в одном запросе'
             )
         if 'choice' in self.initial_data:
-            instance.choice.clear()
             choices = self.initial_data.pop('choice')
             for choice in choices:
                 obj = get_object_or_404(Choice, title=choice['title'])
@@ -125,5 +125,6 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
                     question_answer=instance, choice=obj
                 )
         else:
-            instance.answer_text = self.initial_data.get('answer_text')
+            instance.answer_text = validated_data.get('answer_text', instance.answer_text)
+            instance.save()
         return instance
