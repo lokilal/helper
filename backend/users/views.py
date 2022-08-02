@@ -1,9 +1,7 @@
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, status
+from rest_framework import filters, viewsets, status, mixins
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import UpdateAPIView
-
 
 from .filters import QuestionFilter
 from .models import (Customer, Feedback, Profession, Question,
@@ -22,6 +20,7 @@ class ProfessionViewSet(viewsets.ReadOnlyModelViewSet):
 class WorkerViewSet(viewsets.ModelViewSet):
     queryset = Worker.objects.all()
     serializer_class = WorkerSerializer
+    http_method_names = ['get', 'post']
 
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH', ):
@@ -32,11 +31,13 @@ class WorkerViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    http_method_names = ['get', 'post', 'patch']
 
 
 class FeedbackViewSet(viewsets.ModelViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
+    http_method_names = ['get', 'post']
 
 
 class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -46,8 +47,9 @@ class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = QuestionFilter
 
 
-class QuestionAnswerViewSet(viewsets.ModelViewSet, UpdateAPIView):
+class QuestionAnswerViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionAnswerSerializer
+    http_method_names = ['get', 'post', 'patch']
 
     def get_object(self):
         telegram_id = self.request.data.get('customer')
@@ -72,6 +74,7 @@ class QuestionAnswerViewSet(viewsets.ModelViewSet, UpdateAPIView):
 
 class ScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSerializer
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         telegram_id = self.kwargs.get('telegram_id')
