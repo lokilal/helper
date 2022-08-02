@@ -128,3 +128,11 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
             instance.answer_text = validated_data.get('answer_text', instance.answer_text)
             instance.save()
         return instance
+
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField()
+
+    class Meta:
+        model = Schedule
+        exclude = ('id', )

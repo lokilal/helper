@@ -21,13 +21,21 @@ class Schedule(models.Model):
         validators=[schedule_time_validator]
     )
     link = models.URLField(
-        verbose_name='Ссылка на комнату'
+        verbose_name='Ссылка на комнату',
+        null=True
     )
 
     class Meta:
         verbose_name = 'Расписание'
         verbose_name_plural = 'Расписания'
         ordering = ['-date']
+
+    def save(self, *args, **kwargs):
+        self.link = 'https://vk.com/'
+        return super(Schedule, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.worker} - {self.customer}: {self.date}'
 
 
 class Question(models.Model):

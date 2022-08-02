@@ -7,11 +7,11 @@ from rest_framework.generics import UpdateAPIView
 
 from .filters import QuestionFilter
 from .models import (Customer, Feedback, Profession, Question,
-                     QuestionAnswer, Schedule, Worker)
+                     QuestionAnswer, Worker)
 from .serializers import (CustomerSerializer, FeedbackSerializer,
                           ProfessionSerializer, QuestionAnswerSerializer,
                           QuestionSerializer, WorkerCreateSerializer,
-                          WorkerSerializer)
+                          WorkerSerializer, ScheduleSerializer)
 
 
 class ProfessionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -68,3 +68,16 @@ class QuestionAnswerViewSet(viewsets.ModelViewSet, UpdateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ScheduleViewSet(viewsets.ModelViewSet):
+    serializer_class = ScheduleSerializer
+
+    def get_queryset(self):
+        telegram_id = self.kwargs.get('telegram_id')
+        if self.basename == 'schedule_worker':
+            user = get_object_or_404(Worker, telegram_id=telegram_id)
+        else:
+            user = get_object_or_404(Customer, telegram_id=telegram_id)
+        return user.schedules.all()
+
