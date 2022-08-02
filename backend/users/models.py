@@ -187,7 +187,7 @@ class Worker(models.Model):
         max_length=64, verbose_name='Имя рабочего'
     )
     telegram_id = models.IntegerField(
-        verbose_name='Telegram ID', unique=True
+        verbose_name='Telegram ID', unique=True, db_index=True
     )
     gender = models.CharField(
         max_length=1, choices=GENDERS, default=MALE,

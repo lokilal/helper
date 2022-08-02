@@ -93,7 +93,6 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         choice = self.initial_data.get('choice')
-
         answer_text = attrs.get('answer_text')
         if not choice and not answer_text:
             raise ValidationError(
@@ -111,3 +110,20 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
                     question_answer=question_answer, choice=obj
                 )
         return question_answer
+
+    def update(self, instance, validated_data):
+        if 'choice' and 'answer_text' in self.initial_data:
+            raise ValidationError(
+                'answer_text и choice присутствуют в одном запросе'
+            )
+        if 'choice' in self.initial_data:
+            instance.choice.clear()
+            choices = self.initial_data.pop('choice')
+            for choice in choices:
+                obj = get_object_or_404(Choice, title=choice['title'])
+                QuestionChoiceAnswer.objects.create(
+                    question_answer=instance, choice=obj
+                )
+        else:
+            instance.answer_text = self.initial_data.get('answer_text')
+        return instance
