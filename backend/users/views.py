@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, status, mixins
+from rest_framework import filters, viewsets, status
 from django.shortcuts import get_object_or_404
 
 from .filters import QuestionFilter

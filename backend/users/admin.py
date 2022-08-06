@@ -37,9 +37,11 @@ class FeedbackAdmin(admin.ModelAdmin):
 
 
 class WorkerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'gender', 'profession', 'telegram_id', 'get_rating', 'balance', )
-    list_filter = ('gender', 'profession')
+    list_display = ('name', 'gender', 'profession', 'telegram_id', 'get_rating',
+                    'balance', 'verified')
+    list_filter = ('gender', 'profession', 'verified')
     search_fields = ('telegram_id', )
+    list_editable = ('verified', )
 
 
 class CustomerAdmin(admin.ModelAdmin):

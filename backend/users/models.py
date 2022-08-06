@@ -219,6 +219,9 @@ class Worker(models.Model):
     balance = models.PositiveBigIntegerField(
         verbose_name='Остаток на балансе', default=0
     )
+    verified = models.BooleanField(
+        default=False, verbose_name='Проверенный'
+    )
     created_at = models.DateField(
         auto_now_add=True, verbose_name='Дата создания'
     )
