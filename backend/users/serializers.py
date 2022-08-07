@@ -78,10 +78,11 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     choices = serializers.SerializerMethodField(read_only=True)
+    profession = ProfessionSerializer(read_only=True)
 
     class Meta:
         model = Question
-        exclude = ('id', 'profession',)
+        exclude = ('id',)
 
     def get_choices(self, obj):
         choices = obj.choices.all()
@@ -95,10 +96,14 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
     question = serializers.SlugRelatedField(
         slug_field='title', queryset=Question.objects.all()
     )
+    profession = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = QuestionAnswer
         exclude = ('id',)
+
+    def get_profession(self, obj):
+        return obj.question.profession.title
 
     def validate(self, attrs):
         choice = self.initial_data.get('choice')

@@ -2,9 +2,8 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets, status
 from django.shortcuts import get_object_or_404
-from django.db.models import QuerySet
 
-from .filters import QuestionFilter
+from .filters import QuestionFilter, QuestionAnswerFilter
 from .models import (Customer, Feedback, Profession, Question,
                      QuestionAnswer, Worker)
 from .serializers import (CustomerSerializer, FeedbackSerializer,
@@ -54,6 +53,8 @@ class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class QuestionAnswerViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionAnswerSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filterset_class = QuestionAnswerFilter
     http_method_names = ['get', 'post', 'patch']
 
     def get_object(self):
