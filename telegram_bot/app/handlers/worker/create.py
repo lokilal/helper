@@ -6,6 +6,8 @@ from aiogram import types, dispatcher
 from aiogram.dispatcher import FSMContext
 
 from app.keyboards.worker.create import get_gender_keyboard, get_profession_keyboard
+from app.states.worker.questionnaire import QuestionnaireWorker
+
 
 professions = requests.get(
     'http://127.0.0.1:8000/api/v1/professions/'
@@ -13,15 +15,6 @@ professions = requests.get(
 
 GENDERS = ['F', 'M']
 PROFESSIONS = [profession['title'] for profession in professions]
-
-
-class QuestionnaireWorker(StatesGroup):
-    telegram_id = State()
-    name = State()
-    gender = State()
-    profession = State()
-    experience = State()
-    about = State()
 
 
 def send_post_request(user_data):
