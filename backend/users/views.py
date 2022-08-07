@@ -23,22 +23,20 @@ class WorkerViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
 
     def get_queryset(self):
-        if self.basename == 'all_workers':
-            return Worker.objects.all()
-        return QuerySet(
-            get_object_or_404(Worker, telegram_id=self.kwargs['telegram_id'])
-        )
+        return Worker.objects.filter(telegram_id=self.kwargs['telegram_id'])
 
     def get_serializer_class(self):
-        if self.request.method in ('POST', 'PATCH', ):
+        if self.request.method in ('POST', 'PATCH',):
             return WorkerCreateSerializer
         return WorkerSerializer
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     http_method_names = ['get', 'post', 'patch']
+
+    def get_queryset(self):
+        return Customer.objects.filter(telegram_id=self.kwargs['telegram_id'])
 
 
 class FeedbackViewSet(viewsets.ModelViewSet):
@@ -90,4 +88,3 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         else:
             user = get_object_or_404(Customer, telegram_id=telegram_id)
         return user.schedules.all()
-

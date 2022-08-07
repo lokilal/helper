@@ -32,9 +32,18 @@ class WorkerCreateSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    questionnaires = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Customer
         exclude = ('id', 'created_at',)
+
+    def get_questionnaires(self, obj):
+        queryset = QuestionAnswer.objects.filter(customer=obj)
+        questionnaires_profession_name = set()
+        for answer in queryset:
+            questionnaires_profession_name.add(answer.question.profession.title)
+        return list(questionnaires_profession_name)
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
