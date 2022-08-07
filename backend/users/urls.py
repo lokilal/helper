@@ -11,8 +11,12 @@ router_v1.register(
     basename='professions'
 )
 router_v1.register(
+    'workers/(?P<telegram_id>[^/.]+)', WorkerViewSet,
+    basename='chosen_worker'
+)
+router_v1.register(
     'workers', WorkerViewSet,
-    basename='workers'
+    basename='all_workers'
 )
 router_v1.register(
     'customers', CustomerViewSet,

@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets, status
 from django.shortcuts import get_object_or_404
+from django.db.models import QuerySet
 
 from .filters import QuestionFilter
 from .models import (Customer, Feedback, Profession, Question,
@@ -18,9 +19,15 @@ class ProfessionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class WorkerViewSet(viewsets.ModelViewSet):
-    queryset = Worker.objects.all()
     serializer_class = WorkerSerializer
     http_method_names = ['get', 'post']
+
+    def get_queryset(self):
+        if self.basename == 'all_workers':
+            return Worker.objects.all()
+        return QuerySet(
+            get_object_or_404(Worker, telegram_id=self.kwargs['telegram_id'])
+        )
 
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH', ):
