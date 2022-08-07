@@ -1,7 +1,6 @@
 import requests
 
 from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types, dispatcher
 from aiogram.dispatcher import FSMContext
 
