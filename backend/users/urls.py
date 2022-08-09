@@ -1,44 +1,37 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
 
 from .views import (CustomerViewSet, FeedbackViewSet, ProfessionViewSet,
                     QuestionAnswerViewSet, QuestionViewSet, WorkerViewSet, ScheduleViewSet)
 
-router_v1 = DefaultRouter()
-
-router_v1.register(
-    'professions', ProfessionViewSet,
-    basename='professions'
-)
-router_v1.register(
-    'workers/(?P<telegram_id>[^/.]+)', WorkerViewSet,
-    basename='worker'
-)
-router_v1.register(
-    'customers/(?P<telegram_id>[^/.]+)', CustomerViewSet,
-    basename='customer'
-)
-router_v1.register(
-    'feedbacks', FeedbackViewSet,
-    basename='feedbacks'
-)
-router_v1.register(
-    'questions', QuestionViewSet,
-    basename='questions'
-)
-router_v1.register(
-    'answers/(?P<telegram_id>[^/.]+)', QuestionAnswerViewSet,
-    basename='answers'
-)
-router_v1.register(
-    'schedule/worker/(?P<telegram_id>[^/.]+)', ScheduleViewSet,
-    basename='schedule_worker'
-)
-router_v1.register(
-    'schedule/customer/(?P<telegram_id>[^/.]+)', ScheduleViewSet,
-    basename='schedule_customer'
-)
+GENERAL_METHODS = {
+            'get': 'list',
+            'post': 'create',
+            'patch': 'partial_update'
+        }
 
 urlpatterns = [
-    path('v1/', include(router_v1.urls), name='router_v1')
+    path('v1/answers/', QuestionAnswerViewSet.as_view(
+        GENERAL_METHODS
+    ), name='answers'),
+    path('v1/customers/', CustomerViewSet.as_view(
+        GENERAL_METHODS
+    ), name='customers'),
+    path('v1/workers/', WorkerViewSet.as_view(
+        GENERAL_METHODS
+    ), name='workers'),
+    path('v1/professions/', ProfessionViewSet.as_view(
+        {'get': 'list'}
+    ), name='professions'),
+    path('v1/questions/', QuestionViewSet.as_view(
+        {'get': 'list'}
+    ), name='questions'),
+    path('v1/feedbacks/', FeedbackViewSet.as_view(
+        {'get': 'list'}
+    ), name='feedbacks'),
+    path('v1/schedule/customer/<int:telegram_id>/', ScheduleViewSet.as_view(
+        GENERAL_METHODS
+    ), name='schedule_customer'),
+    path('v1/schedule/worker/<int:telegram_id>/', ScheduleViewSet.as_view(
+        GENERAL_METHODS
+    ), name='schedule_worker')
 ]

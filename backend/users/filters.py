@@ -1,6 +1,6 @@
 import django_filters as df
 
-from .models import Question, QuestionAnswer
+from .models import Question, QuestionAnswer, Worker, Feedback, Profession
 
 
 class QuestionAnswerFilter(df.FilterSet):
@@ -8,7 +8,7 @@ class QuestionAnswerFilter(df.FilterSet):
 
     class Meta:
         model = QuestionAnswer
-        fields = '__all__'
+        fields = ('profession', )
 
 
 class QuestionFilter(df.FilterSet):
@@ -16,4 +16,20 @@ class QuestionFilter(df.FilterSet):
 
     class Meta:
         model = Question
-        fields = '__all__'
+        fields = ('profession', )
+
+
+class WorkersFilter(df.FilterSet):
+
+    class Meta:
+        model = Worker
+        fields = ('telegram_id', )
+
+
+class FeedbackFilter(df.FilterSet):
+    worker = df.CharFilter(field_name='worker__telegram_id', lookup_expr='contains')
+
+    class Meta:
+        model = Feedback
+        fields = ('worker', )
+

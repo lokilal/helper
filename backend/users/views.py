@@ -1,10 +1,10 @@
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, status
+from rest_framework import filters, viewsets, status, generics, mixins
 from django.shortcuts import get_object_or_404
 
-from .filters import QuestionFilter, QuestionAnswerFilter
-from .models import (Customer, Feedback, Profession, Question,
+from .filters import QuestionFilter, QuestionAnswerFilter, WorkersFilter, FeedbackFilter
+from .models import (Customer, Feedback, Profession, Question, Schedule,
                      QuestionAnswer, Worker)
 from .serializers import (CustomerSerializer, FeedbackSerializer,
                           ProfessionSerializer, QuestionAnswerSerializer,
@@ -17,12 +17,18 @@ class ProfessionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProfessionSerializer
 
 
-class WorkerViewSet(viewsets.ModelViewSet):
+class WorkerViewSet(generics.ListCreateAPIView, generics.UpdateAPIView,
+                    viewsets.GenericViewSet):
     serializer_class = WorkerSerializer
-    http_method_names = ['get', 'post']
+    queryset = Worker.objects.all()
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = WorkersFilter
 
-    def get_queryset(self):
-        return Worker.objects.filter(telegram_id=self.kwargs['telegram_id'])
+    def get_object(self):
+        worker = get_object_or_404(
+            Worker, telegram_id=self.request.data.get('telegram_id'))
+        return worker
+
 
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH',):
@@ -30,32 +36,39 @@ class WorkerViewSet(viewsets.ModelViewSet):
         return WorkerSerializer
 
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class CustomerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                      mixins.UpdateModelMixin,
+                      viewsets.GenericViewSet):
     serializer_class = CustomerSerializer
-    http_method_names = ['get', 'post', 'patch']
+    queryset = Customer.objects.all()
 
-    def get_queryset(self):
-        return Customer.objects.filter(telegram_id=self.kwargs['telegram_id'])
+    def get_object(self):
+        customer = get_object_or_404(
+            Customer, telegram_id=self.request.data.get('telegram_id'))
+        return customer
 
 
-class FeedbackViewSet(viewsets.ModelViewSet):
+class FeedbackViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
-    http_method_names = ['get', 'post']
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = FeedbackFilter
 
 
 class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filter_backends = (DjangoFilterBackend, )
     filterset_class = QuestionFilter
 
 
-class QuestionAnswerViewSet(viewsets.ModelViewSet):
+class QuestionAnswerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin,
+                            viewsets.GenericViewSet):
     serializer_class = QuestionAnswerSerializer
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    filter_backends = (DjangoFilterBackend, )
     filterset_class = QuestionAnswerFilter
-    http_method_names = ['get', 'post', 'patch']
 
     def get_object(self):
         telegram_id = self.request.data.get('customer')
@@ -67,7 +80,7 @@ class QuestionAnswerViewSet(viewsets.ModelViewSet):
         return obj
 
     def get_queryset(self):
-        telegram_id = self.kwargs.get('telegram_id')
+        telegram_id = self.request.data.get('customer')
         customer = get_object_or_404(Customer, telegram_id=telegram_id)
         return customer.answers.all()
 
@@ -78,9 +91,19 @@ class QuestionAnswerViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ScheduleViewSet(viewsets.ModelViewSet):
+class ScheduleViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                      mixins.UpdateModelMixin,
+                      viewsets.GenericViewSet):
     serializer_class = ScheduleSerializer
-    http_method_names = ['get', 'post']
+
+    def get_object(self):
+        worker = get_object_or_404(
+            Worker, telegram_id=self.request.data.get('worker'))
+        customer = get_object_or_404(
+            Customer, telegram_id=self.request.data.get('customer'))
+        obj = get_object_or_404(Schedule,
+                                worker=worker, customer=customer)
+        return obj
 
     def get_queryset(self):
         telegram_id = self.kwargs.get('telegram_id')
