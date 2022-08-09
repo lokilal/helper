@@ -1,6 +1,6 @@
 import django_filters as df
 
-from .models import Question, QuestionAnswer, Worker, Feedback, Schedule
+from .models import Question, QuestionAnswer, Worker, Feedback, Schedule, Customer
 
 
 class QuestionAnswerFilter(df.FilterSet):
@@ -50,3 +50,10 @@ class ScheduleFilter(df.FilterSet):
     class Meta:
         model = Schedule
         fields = ('worker', 'customer')
+
+
+class CustomerFilter(df.FilterSet):
+
+    class Meta:
+        model = Customer
+        fields = ('telegram_id', )

@@ -1,10 +1,11 @@
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status, generics, mixins
+from rest_framework import viewsets, status, mixins
 from django.shortcuts import get_object_or_404
 
 from .filters import (QuestionFilter, QuestionAnswerFilter,
-                      WorkersFilter, FeedbackFilter, ScheduleFilter)
+                      WorkersFilter, FeedbackFilter, ScheduleFilter,
+                      CustomerFilter)
 from .models import (Customer, Feedback, Profession, Question, Schedule,
                      QuestionAnswer, Worker)
 from .serializers import (CustomerSerializer, FeedbackSerializer,
@@ -42,6 +43,8 @@ class CustomerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
                       viewsets.GenericViewSet):
     serializer_class = CustomerSerializer
     queryset = Customer.objects.all()
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = CustomerFilter
 
     def get_object(self):
         customer = get_object_or_404(
