@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, status, generics, mixins
+from rest_framework import viewsets, status, generics, mixins
 from django.shortcuts import get_object_or_404
 
-from .filters import QuestionFilter, QuestionAnswerFilter, WorkersFilter, FeedbackFilter
+from .filters import (QuestionFilter, QuestionAnswerFilter,
+                      WorkersFilter, FeedbackFilter, ScheduleFilter)
 from .models import (Customer, Feedback, Profession, Question, Schedule,
                      QuestionAnswer, Worker)
 from .serializers import (CustomerSerializer, FeedbackSerializer,
@@ -17,7 +18,8 @@ class ProfessionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProfessionSerializer
 
 
-class WorkerViewSet(generics.ListCreateAPIView, generics.UpdateAPIView,
+class WorkerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
+                    mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
     serializer_class = WorkerSerializer
     queryset = Worker.objects.all()
@@ -95,6 +97,9 @@ class ScheduleViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
                       mixins.UpdateModelMixin,
                       viewsets.GenericViewSet):
     serializer_class = ScheduleSerializer
+    queryset = Schedule.objects.all()
+    filter_backends = (DjangoFilterBackend)
+    filterset_class = ScheduleFilter
 
     def get_object(self):
         worker = get_object_or_404(
@@ -104,11 +109,3 @@ class ScheduleViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
         obj = get_object_or_404(Schedule,
                                 worker=worker, customer=customer)
         return obj
-
-    def get_queryset(self):
-        telegram_id = self.kwargs.get('telegram_id')
-        if self.basename == 'schedule_worker':
-            user = get_object_or_404(Worker, telegram_id=telegram_id)
-        else:
-            user = get_object_or_404(Customer, telegram_id=telegram_id)
-        return user.schedules.all()

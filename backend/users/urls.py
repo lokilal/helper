@@ -28,10 +28,7 @@ urlpatterns = [
     path('v1/feedbacks/', FeedbackViewSet.as_view(
         {'get': 'list'}
     ), name='feedbacks'),
-    path('v1/schedule/customer/<int:telegram_id>/', ScheduleViewSet.as_view(
+    path('v1/schedule/', ScheduleViewSet.as_view(
         GENERAL_METHODS
-    ), name='schedule_customer'),
-    path('v1/schedule/worker/<int:telegram_id>/', ScheduleViewSet.as_view(
-        GENERAL_METHODS
-    ), name='schedule_worker')
+    ), name='schedules')
 ]
