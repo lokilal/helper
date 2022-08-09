@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from .views import (CustomerViewSet, FeedbackViewSet, ProfessionViewSet,
                     QuestionAnswerViewSet, QuestionViewSet, WorkerViewSet, ScheduleViewSet)
