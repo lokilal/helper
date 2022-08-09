@@ -31,7 +31,6 @@ class WorkerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
             Worker, telegram_id=self.request.data.get('telegram_id'))
         return worker
 
-
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH',):
             return WorkerCreateSerializer
@@ -98,7 +97,7 @@ class ScheduleViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
                       viewsets.GenericViewSet):
     serializer_class = ScheduleSerializer
     queryset = Schedule.objects.all()
-    filter_backends = (DjangoFilterBackend)
+    filter_backends = (DjangoFilterBackend, )
     filterset_class = ScheduleFilter
 
     def get_object(self):
