@@ -3,7 +3,8 @@ import requests
 from aiogram import types, dispatcher
 from aiogram.dispatcher.filters import Text
 
-from app.keyboards.customer.menu import get_all_professions_keyboard
+from app.keyboards.customer.menu import get_all_professions_keyboard, get_start_questionnaire_keyboard
+from app.states.customer.questionnaire import QuestionnaireCustomer
 
 response = requests.get(
     'http://127.0.0.1:8000/api/v1/professions/'
@@ -19,10 +20,24 @@ async def select_specialist(call: types.CallbackQuery):
 
 
 async def chose_specialist(call: types.CallbackQuery):
-    requests.get(
-        f'http://127.0.0.1:8000/api/v1/customers/{call.message.chat.id}/'
+    user_questionnaires = requests.get(
+        f'http://127.0.0.1:8000/api/v1/customers/?telegram_id={call.message.chat.id}'
     )
-
+    if user_questionnaires.status_code != 200:
+        await call.message.answer('В данный момент проходят технические работы,'
+                                  'просим прощения за доставленные неудобства.')
+    elif call.data not in user_questionnaires.json()[0]['questionnaires']:
+        await call.message.edit_text(
+            'Вы не ответили на анкету, жмите кнопку ниже',
+            reply_markup=get_start_questionnaire_keyboard())
+        questions = requests.get(
+            f'http://127.0.0.1:8000/api/v1/questions/?profession={call.data}'
+        ).json()
+        QuestionnaireCustomer.telegram_id = call.message.chat.id
+        QuestionnaireCustomer.questions = questions
+        QuestionnaireCustomer.answers = []
+    else:
+        await call.message.answer('Вы успешно прошли это анкетирование')
 
 
 def chose_specialist_handlers(dp: dispatcher.Dispatcher):

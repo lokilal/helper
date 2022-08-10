@@ -20,3 +20,18 @@ def get_all_professions_keyboard(professions):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
     return keyboard
+
+
+def get_start_questionnaire_keyboard():
+    buttons = [
+        types.InlineKeyboardButton(
+            text='Начать тестирование',
+            callback_data='start_questionnaire'),
+        types.InlineKeyboardButton(
+            text='Вернуться в начало',
+            callback_data='customer'
+        )
+    ]
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*buttons)
+    return keyboard

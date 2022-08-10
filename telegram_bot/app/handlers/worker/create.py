@@ -7,7 +7,6 @@ from aiogram.dispatcher import FSMContext
 from app.keyboards.worker.create import get_gender_keyboard, get_profession_keyboard
 from app.states.worker.questionnaire import QuestionnaireWorker
 
-
 professions = requests.get(
     'http://127.0.0.1:8000/api/v1/professions/'
 ).json()
@@ -26,21 +25,25 @@ def send_post_request(user_data):
         'about': user_data['about']
     }
     requests.post(
-        'http://127.0.0.1:8000/api/v1/workers/',
+        f'http://127.0.0.1:8000/api/v1/workers/',
         data=context
     )
 
 
 async def create_worker(call: types.CallbackQuery):
-    await call.message.answer('Приветствую, работяга, необходимо пройти'
-                              ' небольшой опрос')
+    await call.message.answer('Приветствую, работяга!')
     response = requests.get(
-        f'http://127.0.0.1:8000/api/v1/workers/{call.from_user.id}/'
+        f'http://127.0.0.1:8000/api/v1/workers/?telegram_id={call.message.chat.id}'
     )
     if response.status_code != 200:
+        await call.message.edit_text('В данный момент проходят технические работы,'
+                                     'просим прощения за доставленные неудобства.')
+    elif not response.json():
         await call.message.answer('Для начала введите имя, которое будет отображаться '
                                   'в вашем профиле')
         await QuestionnaireWorker.name.set()
+    else:
+        await call.message.answer('Вы зарегистрированы')
 
 
 async def get_name(message: types.Message, state: FSMContext):
@@ -59,9 +62,9 @@ async def get_gender(call: types.CallbackQuery, state: FSMContext):
                           'клавиатуру ниже.')
         return
     await state.update_data(gender=call.data)
-    await call.message.answer('Теперь выбери свою профессию',
-                              reply_markup=get_profession_keyboard(PROFESSIONS)
-                              )
+    await call.message.edit_text('Теперь выбери свою профессию',
+                                 reply_markup=get_profession_keyboard(PROFESSIONS)
+                                 )
     await QuestionnaireWorker.profession.set()
 
 
