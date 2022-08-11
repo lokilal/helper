@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins
 from django.shortcuts import get_object_or_404
+from rest_framework.pagination import LimitOffsetPagination
 
 from .filters import (QuestionFilter, QuestionAnswerFilter,
                       WorkersFilter, FeedbackFilter, ScheduleFilter,
@@ -45,6 +46,7 @@ class CustomerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
     queryset = Customer.objects.all()
     filter_backends = (DjangoFilterBackend, )
     filterset_class = CustomerFilter
+    pagination_class = LimitOffsetPagination
 
     def get_object(self):
         customer = get_object_or_404(
