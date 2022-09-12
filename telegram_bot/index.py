@@ -19,7 +19,7 @@ async def start_command(message: types.Message):
     await message.answer('Приветствую тебя, выбери кем ты являешься',
                          reply_markup=get_start_keyboard())
 
-
+ 
 async def main():
     bot = Bot(SECRET_KEY)
     dp = Dispatcher(bot, storage=MemoryStorage())
