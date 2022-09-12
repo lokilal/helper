@@ -4,4 +4,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ls
+RUN ls
