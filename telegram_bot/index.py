@@ -21,7 +21,7 @@ async def start_command(message: types.Message):
 
 
 async def main():
-    bot = Bot('1555030253:AAFfz7XlY14RrRDyrw0qqscI573MHekjPRU')
+    bot = Bot(SECRET_KEY)
     dp = Dispatcher(bot, storage=MemoryStorage())
     dp.register_message_handler(start_command, commands='start')
     register_handlers.get_all_handlers(dp)
