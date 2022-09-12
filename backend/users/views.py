@@ -47,6 +47,7 @@ class CustomerViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
     filter_backends = (DjangoFilterBackend, )
     filterset_class = CustomerFilter
     pagination_class = LimitOffsetPagination
+    paginate_by = 3
 
     def get_object(self):
         customer = get_object_or_404(

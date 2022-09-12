@@ -53,7 +53,7 @@ async def checkbox_questionnaire_answer(call: types.CallbackQuery):
                 else:
                     print('Текстовый вопрос')
             else:
-                await call.message.answer('Вы успешно ответили на все вопросы')
+                await call.answer('Программист')
 
 
 def questionnaire_answers_handlers(dp: dispatcher.Dispatcher):
