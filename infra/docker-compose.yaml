@@ -48,9 +48,7 @@ services:
   
   
   telegram_bot:
-    build:
-      context: ../telegram_bot/
-      dockerfile: Dockerfile
+    image: lokilal/telegram_bot:latest
     volumes: 
       - telegram-bot-data:/var/lib/telegram-bot-data
     ports:
