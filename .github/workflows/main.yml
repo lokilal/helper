@@ -22,5 +22,5 @@ jobs:
         uses: docker/build-push-action@v2 
         with:
           push: true
-          tags: lokilal/infra:latest
+          tags: lokilal/telegram_bot:latest
           file: telegram_bot/Dockerfile
