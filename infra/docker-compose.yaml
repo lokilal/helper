@@ -51,12 +51,8 @@ services:
     image: lokilal/telegram_bot:latest
     volumes: 
       - telegram-bot-data:/var/lib/telegram-bot-data
-    ports:
-      - 8081:8081
     env_file: 
       - ./.env
-    depends_on:
-      - web
      
 volumes:
   static_value:
