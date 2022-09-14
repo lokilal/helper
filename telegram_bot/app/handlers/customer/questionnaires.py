@@ -1,14 +1,20 @@
 import requests
+import os
 
 from aiogram import types, dispatcher
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State
+from dotenv import load_dotenv
 
 from app.states.customer.questionnaire import QuestionnaireCustomer
 from app.keyboards.customer.questionnaire import get_question_keyboard
 
+load_dotenv()
+
+HOST = os.getenv('HOST')
+
 response = requests.get(
-    f'http://127.0.0.1:8000/api/v1/questions/'
+    f'{HOST}/api/v1/questions/'
 ).json()
 QUESTIONS_CHOICES = [question['choices'] for question in response if question['question_type'] == 'checkbox']
 
@@ -31,7 +37,7 @@ async def checkbox_questionnaire_answer(call: types.CallbackQuery):
                     ]
                 }
                 question_answer = requests.post(
-                    f'http://127.0.0.1:8000/api/v1/answers/',
+                    f'{HOST}/api/v1/answers/',
                     json=context
                 )
                 if question_answer.status_code != 201:

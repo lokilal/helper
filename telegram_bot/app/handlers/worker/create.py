@@ -1,14 +1,21 @@
 import requests
+import os
 
 from aiogram.dispatcher.filters import Text
 from aiogram import types, dispatcher
 from aiogram.dispatcher import FSMContext
+from dotenv import load_dotenv
 
 from app.keyboards.worker.create import get_gender_keyboard, get_profession_keyboard
 from app.states.worker.questionnaire import QuestionnaireWorker
 
+load_dotenv()
+
+HOST = os.getenv('HOST')
+
+
 professions = requests.get(
-    'http://127.0.0.1:8000/api/v1/professions/'
+    f'{HOST}/api/v1/professions/'
 ).json()
 
 GENDERS = ['F', 'M']
