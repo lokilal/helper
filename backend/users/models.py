@@ -39,16 +39,8 @@ class Schedule(models.Model):
 
 
 class Question(models.Model):
-    QUESTION_TYPE = [
-        ('checkbox', 'Несколько вариантов'),
-        ('text', 'Текст'),
-    ]
     title = models.CharField(
         max_length=128, verbose_name='Вопрос'
-    )
-    question_type = models.CharField(
-        choices=QUESTION_TYPE, default='checkbox',
-        max_length=8, verbose_name='Вид ответа'
     )
     profession = models.ForeignKey(
         'Profession', on_delete=models.CASCADE,
@@ -114,9 +106,6 @@ class QuestionAnswer(models.Model):
     choice = models.ManyToManyField(
         Choice, through='QuestionChoiceAnswer',
         verbose_name='Ответ', blank=True, null=True
-    )
-    answer_text = models.TextField(
-        blank=True, null=True
     )
     created_at = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата ответа'

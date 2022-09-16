@@ -15,10 +15,10 @@ class ChoiceInline(admin.StackedInline):
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'profession', 'question_type', )
+    list_display = ('title', 'profession', )
     list_filter = ('profession', )
     fieldsets = (
-        ('Добавить вопрос', {'fields': ['title', 'question_type', 'profession']}),
+        ('Добавить вопрос', {'fields': ['title', 'profession']}),
     )
     inlines = [ChoiceInline]
 
