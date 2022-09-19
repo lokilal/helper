@@ -11,9 +11,4 @@ def get_question_keyboard(choices: dict):
         )
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(*buttons)
-    keyboard.add(
-        types.InlineKeyboardButton(
-            text='Далее', callback_data='customer_next_question'
-        )
-    )
     return keyboard

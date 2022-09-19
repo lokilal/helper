@@ -44,7 +44,6 @@ async def chose_specialist(call: types.CallbackQuery):
         ).json()
         QuestionnaireCustomer.telegram_id = call.message.chat.id
         QuestionnaireCustomer.questions = questions
-        QuestionnaireCustomer.answers = []
     else:
         await call.message.answer('Вы успешно прошли это анкетирование')
 

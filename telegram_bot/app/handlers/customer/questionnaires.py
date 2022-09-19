@@ -3,7 +3,6 @@ import os
 
 from aiogram import types, dispatcher
 from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters.state import State
 from dotenv import load_dotenv
 
 from app.states.customer.questionnaire import QuestionnaireCustomer
@@ -16,65 +15,45 @@ HOST = os.getenv('HOST')
 response = requests.get(
     f'{HOST}/api/v1/questions/'
 ).json()
-QUESTIONS_CHOICES = [question['choices'] for question in response if question['question_type'] == 'checkbox']
+QUESTIONS = [question['choices'] for question in response]
+
+CALL_DATA = []
 
 
 async def checkbox_questionnaire_answer(call: types.CallbackQuery):
-    if call.data not in ('start_questionnaire', 'customer_next_question'):
-        QuestionnaireCustomer.answers.append(
-            {'title': call.data}
+    if call.data in (*CALL_DATA, 'start_questionnaire') and len(QuestionnaireCustomer.questions) != 0:
+        question = QuestionnaireCustomer.questions.pop(0)
+        context = {
+            'customer': call.message.chat.id,
+            'question': question,
+            'choice': [
+                {'title': call.data}
+            ]
+        }
+        question_answer = requests.post(
+            f'{HOST}/api/v1/answers/',
+            json=context
+        )
+        await call.message.edit_text(
+            question['title'],
+            reply_markup=get_question_keyboard(question['choices'])
         )
     else:
-        if call.data == 'customer_next_question':
-            if len(QuestionnaireCustomer.answers) == 0:
-                await call.answer('Вы не выбрали ответ')
-            else:
-                context = {
-                    'customer': call.message.chat.id,
-                    'question': QuestionnaireCustomer.lasts_question,
-                    'choice': [
-                        *QuestionnaireCustomer.answers
-                    ]
-                }
-                question_answer = requests.post(
-                    f'{HOST}/api/v1/answers/',
-                    json=context
-                )
-                if question_answer.status_code != 201:
-                    await call.answer('Технические неполадки')
-                    return
-                QuestionnaireCustomer.answers = []
-        if isinstance(QuestionnaireCustomer.questions, State):
-            await call.answer('Что-то пошло не так. Прошу вернуться в начало командой /start')
-            return
-        else:
-            if len(QuestionnaireCustomer.questions) != 0:
-                question = QuestionnaireCustomer.questions.pop(0)
-                QuestionnaireCustomer.lasts_question = question['title']
-                if question['question_type'] == 'checkbox':
-                    await call.message.edit_text(
-                        question['title'],
-                        reply_markup=get_question_keyboard(question['choices'])
-                    )
-                else:
-                    print('Текстовый вопрос')
-            else:
-                await call.answer('Программист')
+        await call.message.edit_text(
+            'Большое спасибо за предоставленные ответы, с их помощью специалист '
+            'сможет лучше разобраться в вашей проблеме. Перейдем к выбору специалистов'
+        )
 
 
 def questionnaire_answers_handlers(dp: dispatcher.Dispatcher):
     dp.register_callback_query_handler(
         checkbox_questionnaire_answer,
         Text(
-            contains='customer_next_question',
-        ))
-    dp.register_callback_query_handler(
-        checkbox_questionnaire_answer,
-        Text(
             contains='start_questionnaire',
         ))
-    for question_choice in QUESTIONS_CHOICES:
+    for question_choice in QUESTIONS:
         for choice in question_choice:
+            CALL_DATA.append(choice['title'])
             dp.register_callback_query_handler(
                 checkbox_questionnaire_answer,
                 Text(contains=choice['title'])
