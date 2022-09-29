@@ -7,48 +7,10 @@ services:
     env_file:
       - ./.env
   
-  web:
-    container_name: web
-    build:
-      context: ../backend/
-      dockerfile: Dockerfile
-    restart: always
-    volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
-    depends_on:
-      - db
-    env_file:
-      - ./.env
-    ports: 
-      - "8000:8000"
-
-  nginx: 
-    image: nginx:1.21.3-alpine
-    ports: 
-      - "80:80"
-      - "443:443"
-    volumes: 
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - static_value:/var/html/static/
-      - media_value:/var/html/media/
-    restart: always
-    entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'" 
-    depends_on: 
-      - web
-  
-  certbot:
-    image: certbot/certbot
-    volumes:
-        - ./data/certbot/conf:/etc/letsencrypt
-        - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'" 
-  
-  
   telegram_bot:
-    image: lokilal/telegram_bot:latest
+    build:
+      context: ../telegram_bot/
+      dockerfile: Dockerfile
     volumes: 
       - telegram-bot-data:/var/lib/telegram-bot-data
     env_file: 
