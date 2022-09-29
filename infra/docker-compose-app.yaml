@@ -3,8 +3,7 @@ services:
   web:
       container_name: web
       build:
-        context: ../backend/
-        dockerfile: Dockerfile
+        image: lokilal/helper:latest
       restart: always
       volumes:
         - static_value:/app/static/
