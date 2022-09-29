@@ -1,8 +1,8 @@
-name: CI
+name: push_to_docker
 
 on:
   push:
-    branches: [ "telegram_bot" ]
+    branches: [ "main" ]
 
 jobs:
   build_and_push_to_docker_hub:
@@ -22,5 +22,5 @@ jobs:
         uses: docker/build-push-action@v2 
         with:
           push: true
-          tags: lokilal/telegram_bot:latest
-          file: telegram_bot/Dockerfile
+          tags: lokilal/helper:latest
+          file: backend/Dockerfile

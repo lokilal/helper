@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - "../helper_db:/var/lib/postgresql/data"
+    env_file:
+      - ./.env
+
+  docker-hoster:
+    image: dvdarias/docker-hoster
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock"
+      - "/etc/hosts:/tmp/hosts"
