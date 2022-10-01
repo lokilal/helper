@@ -205,6 +205,12 @@ class Worker(models.Model):
     about = models.TextField(
         verbose_name='Краткое описание'
     )
+    photo = models.ImageField(
+        verbose_name='Фото', upload_to='photos/')
+    cv = models.ImageField(
+        verbose_name='Фотокарточка', upload_to='cvs/',
+        blank=True, null=True
+    )
     balance = models.PositiveBigIntegerField(
         verbose_name='Остаток на балансе', default=0
     )

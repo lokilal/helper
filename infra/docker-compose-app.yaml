@@ -4,6 +4,7 @@ services:
       container_name: web
       image: lokilal/helper:latest
       restart: always
+      command: "celery -A backend worker -l info"
       volumes:
         - static_value:/app/static/
         - media_value:/app/media/

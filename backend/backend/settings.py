@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY_DJANGO', default='SUPER_SECRET_KEY')
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -57,24 +57,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('POSTGRES_DB', default='helper'),
+        'USER': os.getenv('POSTGRES_USER', default='admin'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='admin'),
+        'HOST': os.getenv('DB_HOST', default='db'),
+        'PORT': os.getenv('DB_PORT', default='5432')
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-            'NAME': os.getenv('POSTGRES_DB', default='new_db'),
-            'USER': os.getenv('POSTGRES_USER', default='admin'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='admin'),
-            'HOST': os.getenv('DB_HOST', default='db'),
-            'PORT': os.getenv('DB_PORT', default='5432')
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -111,4 +103,13 @@ REST_FRAMEWORK = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
