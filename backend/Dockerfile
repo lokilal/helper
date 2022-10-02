@@ -12,4 +12,5 @@ RUN python3 -m pip install --upgrade pip && \
     python3 manage.py makemigrations --noinput
 
 CMD python3 manage.py migrate --noinput && \
+    mkdir media/cvs/ && \
     gunicorn backend.wsgi:application --bind 0.0.0.0:8000
