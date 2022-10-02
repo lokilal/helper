@@ -3,6 +3,7 @@ from django.db import models
 from pytils.translit import slugify
 
 from .validators import schedule_time_validator
+from .services import draw_cv
 
 
 class Schedule(models.Model):
@@ -228,6 +229,19 @@ class Worker(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.cv:
+            self.cv = draw_cv(
+                photo=self.photo.path,
+                name=self.name,
+                profession=self.profession,
+                experience=self.experience,
+                about=self.about,
+                file_name=self.photo.name
+            )
+        super(Worker, self).save()
 
     @property
     def get_rating(self):
