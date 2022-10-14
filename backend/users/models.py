@@ -4,7 +4,7 @@ from pytils.translit import slugify
 
 from .validators import schedule_time_validator
 from .services import draw_cv
-
+from django.conf import settings
 
 class Schedule(models.Model):
     worker = models.ForeignKey(
@@ -230,10 +230,9 @@ class Worker(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, *args, **kwargs):
         if not self.cv:
-            self.cv = draw_cv(
+            file_name = draw_cv(
                 photo=self.photo.path,
                 name=self.name,
                 profession=self.profession,
@@ -241,7 +240,9 @@ class Worker(models.Model):
                 about=self.about,
                 file_name=self.photo.name
             )
+            self.cv = 'cvs/' + file_name
         super(Worker, self).save()
+
 
     @property
     def get_rating(self):

@@ -5,7 +5,6 @@ from PIL import Image, ImageDraw, ImageFont
 
 from django.conf import settings
 
-
 MAIN_FONT = os.path.join(settings.BASE_DIR, 'users/fonts/main.ttf')
 
 BIG_FONT = ImageFont.truetype(MAIN_FONT, size=20, encoding='UTF-8')
@@ -39,4 +38,4 @@ def draw_cv(photo, name, profession, experience, about, file_name):
                 font=VERY_SMALL_FONT, fill='black'
                 )
     cv.save(path_to_save)
-    return path_to_save
+    return new_file_name
