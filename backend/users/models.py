@@ -231,7 +231,7 @@ class Worker(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.cv:
+        if not self.cv and self.verified:
             file_name = draw_cv(
                 photo=self.photo.path,
                 name=self.name,
